@@ -1,6 +1,6 @@
 'use strict';
 
-var nodeId = 0;
+var nodeId = 1;
 var root = null;
 
 var nodeMap = {};
