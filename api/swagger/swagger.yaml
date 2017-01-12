@@ -1,0 +1,128 @@
+swagger: "2.0"
+info:
+  version: 0.0.1
+  title: Binary Tree API
+  description: This is a basic REST API for binary search tree data structure.
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  - http
+
+paths:
+  /tree:
+    x-swagger-router-controller: tree
+    post:
+      operationId: addNode
+      description: Adds an integer value to the tree
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+        - text/plain
+      parameters:
+        - name: number
+          description: Integer value to add
+          in: formData
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: New or existing node containing the value
+          schema:
+            $ref: '#/definitions/node'
+        '400':
+          description: Invalid value supplied
+  /tree/root:
+    x-swagger-router-controller: tree
+    get:
+      operationId: getRootNode
+      description: Returns tree's root, if exists
+      produces:
+        - application/json
+        - text/plain
+      responses:
+        '200':
+          description: Tree root
+          schema:
+            $ref: '#/definitions/node'
+        '204':
+          description: No root exists
+  /tree/{id}:
+    x-swagger-router-controller: tree
+    get:
+      operationId: getNodeByID
+      description: Returns tree node by ID
+      produces:
+        - application/json
+        - text/plain
+      parameters:
+        - name: id
+          in: path
+          description: ID of node to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Tree node with the specified ID
+          schema:
+            $ref: '#/definitions/node'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Node not found
+  /tree/find:
+    x-swagger-router-controller: tree
+    get:
+      operationId: findNode
+      description: Get tree nodes by searching by parent ID or node value
+      produces:
+        - application/json
+        - text/plain
+      parameters:
+        - name: parentId
+          description: Returns all nodes whose parent has the specified ID
+          in: query
+          required: false
+          type: integer
+          format: int64
+        - name: number
+          description: Returns node with the specified value
+          in: query
+          required: false
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Tree nodes satisfying search criteria or empty array if there are none
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/node'
+          
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  node:
+    type: object
+    description: Represents tree node
+    required:
+      - id
+      - number
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: Unique node ID
+      number:
+        type: integer
+        description: Numeric value stored in the node
+      parentId:
+        type: integer
+        format: int64
+        description: Node parent ID
