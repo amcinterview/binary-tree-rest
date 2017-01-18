@@ -1,5 +1,7 @@
 'use strict';
 
+var fs = require("fs");
+
 var nodeId = 1;
 var root = null;
 
@@ -14,13 +16,21 @@ function Node(parent, number) {
     self.left = null;
     self.right = null;
 
+    if (parent) {
+        if (number < parent.number) {
+            parent.left = self;
+        } else {
+            parent.right = self;
+        }
+    }
+
     nodeMap[self.id] = self;
 
     self.toJSON = function () {
         var obj = {
             id: self.id,
             number: self.number
-        }
+        };
 
         if (self.parent) {
             obj.parentId = self.parent.id;
@@ -54,14 +64,7 @@ function addTreeNode(number) {
         }
 
         if (rv == null) {
-            var node = new Node(parent, number);
-            if (number < parent.number) {
-                parent.left = node;
-            } else {
-                parent.right = node;
-            }
-
-            rv = node;
+            rv = new Node(parent, number);
         }
     }
 
@@ -115,14 +118,15 @@ function findNode(req, res, next) {
     var number = req.swagger.params.number.value;
     var parentId = req.swagger.params.parentId.value;
     var rv = [];
+    var node;
 
     if (number) {
-        var node = findTreeNode(number);
+        node = findTreeNode(number);
         if (node) {
             rv = [node.toJSON()];
         }
     } else if (parentId) {
-        var node = nodeMap[parentId];
+        node = nodeMap[parentId];
         if (node) {
             rv = [];
             if (node.left) {
@@ -138,4 +142,29 @@ function findNode(req, res, next) {
     res.json(rv);
 }
 
-module.exports = { addNode, getRootNode, getNodeByID, findNode };
+
+function getDoc(req, res, next) {
+    fs.readFile('doc/index.html', "utf8", function (err, data) {
+        res.status(200).send(data.toString());
+    });
+}
+
+function getPopulate(req, res, next) {
+    fs.readFile('doc/populate.html', "utf8", function (err, data) {
+        res.status(200).send(data.toString());
+    });
+}
+
+function populateTree(req, res, next) {
+    var numbers = req.swagger.params.numbers.value.split(" ");
+    numbers.forEach(function (number) {
+        number = +(number.trim());
+        if (number) {
+            addTreeNode(number);
+        }
+    });
+
+    res.status(200).send("OK");
+}
+
+module.exports = { addNode, getRootNode, getNodeByID, findNode, getDoc, getPopulate, populateTree };

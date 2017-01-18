@@ -12,6 +12,44 @@ schemes:
   - http
 
 paths:
+  /tree/doc:
+    x-swagger-router-controller: tree
+    get:
+      operationId: getDoc
+      produces:
+        - text/html
+      responses:
+        '200':
+          description: API documentation
+          schema:
+            type: file
+            format: text/html
+  /tree/populate:
+    x-swagger-router-controller: tree
+    get:
+      operationId: getPopulate
+      produces:
+        - text/html
+      responses:
+        '200':
+          description: Populates tree with the predifned data
+          schema:
+            type: file
+            format: text/html
+    post:
+      operationId: populateTree
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - name: numbers
+          in: formData
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
   /tree:
     x-swagger-router-controller: tree
     post:
