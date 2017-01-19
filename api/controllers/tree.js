@@ -1,6 +1,7 @@
 'use strict';
 
 var fs = require("fs");
+var path = require("path");
 
 var nodeId = 1;
 var root = null;
@@ -143,14 +144,18 @@ function findNode(req, res, next) {
 }
 
 
+function getDocPath(filename) {
+    return path.join(__dirname, "../../doc/" + filename);
+}
+
 function getDoc(req, res, next) {
-    fs.readFile('doc/index.html', "utf8", function (err, data) {
+    fs.readFile(getDocPath("index.html"), "utf8", function (err, data) {
         res.status(200).send(data.toString());
     });
 }
 
 function getPopulate(req, res, next) {
-    fs.readFile('doc/populate.html', "utf8", function (err, data) {
+    fs.readFile(getDocPath("populate.html"), "utf8", function (err, data) {
         res.status(200).send(data.toString());
     });
 }
